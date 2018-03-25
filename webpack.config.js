@@ -1,6 +1,8 @@
 const webpack = require('webpack')
 const path = require('path')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const PurifyCSS = require('purifycss-webpack')
+const glob = require('glob-all')
 
 module.exports = {
   entry: {
@@ -89,5 +91,12 @@ module.exports = {
     new ExtractTextPlugin({
       filename: '[name].min.css'
     }),
+    new webpack.optimize.uglifyJsPlugin(),
+    new PurifyCSS({
+      paths: glob.sync([
+        path.join(__dirname, './*.html'),
+        path.join(__dirname, './src/*.js')
+      ])
+    })
   ]
 }
