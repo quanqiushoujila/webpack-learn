@@ -1,8 +1,10 @@
 const webpack = require('webpack')
 const path = require('path')
+const autoprefixer = require('autoprefixer')
+const glob = require('glob-all')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const PurifyCSS = require('purifycss-webpack')
-const glob = require('glob-all')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
   entry: {
@@ -13,9 +15,9 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, './dist'),
-    publicPath: './dist',
-    filename: '[name].js',
-    chunkFilename: '[name].chunk.js'
+    // publicPath: './dist',
+    filename: '[name].[hash:5].js',
+    chunkFilename: '[name].chunk.[hash:5].js'
   },
   module: {
     rules: [
@@ -61,6 +63,10 @@ module.exports = {
               options: {
                 ident: 'postcss',
                 plugins: [
+                  require('postcss-sprites')({
+                    spritePath: 'dist/img/sprite', // 原始大小的雪碧图放置位置
+                    retina: true // 是否识别分辨率标识
+                  }),
                   require('autoprefixer')()
                 ]
               }
@@ -71,32 +77,84 @@ module.exports = {
           ]
         }) 
       },
-      // {
-      //   test: /\.(gif|png|jpg|woff|svg|eot|ttf)\??.*$/,
-      //   loader: 'url-loader?limit=1000*name=image/[name].[ext]'
-      // }
+      {
+        test: /\.(gif|png|jpg|jpeg)$/,
+        use: [
+          /*{
+            loader: 'file-loader',
+            options: {
+              publicPath: '',
+              output: 'dist/',
+              useRelativePath: true
+            }
+          },*/
+          {
+            loader: 'url-loader?limit=1000&name=img/[name][hash:5].[ext]',
+            // options: {
+            //   name: '[name][hash:5].[ext]',
+            //   limit: 4000,
+            //   publicPath: '',
+            //   output: 'dist/',
+            //   useRelativePath: true
+            // }
+          },
+          {
+            loader: 'img-loader',
+            options: {
+              pngquant: {
+                quality: 80
+              }
+            }
+          }
+        ]
+      },
+      {
+        test: /\.(eot|woff2?|ttf|svg)$/,
+        use: [
+          {
+            loader: 'url-loader?limit=1000&name=font/[name][hash:5].[ext]',
+            // options: {
+            //   name: '[name][hash:5].[ext]',
+            //   limit: 1000,
+            //   publicPath: '',
+            //   output: 'dist/'
+            // }
+          }
+        ]
+      }
     ]
   },
+  // resolve: {
+  //   extensions: ['.js'],
+  //   alias: {
+  //     '@': resolve('src')
+  //   }
+  // },
   plugins: [
-    new webpack.optimize.CommonsChunkPlugin({
-      name: 'common',
-      minChunks: 2, // 使用2次及2次以上时提取公共代码
-      // chunks: ['pageA', 'pageB']
+    new ExtractTextPlugin({
+      filename: '[name].min.[hash:5].css'
     }),
+    // new webpack.optimize.CommonsChunkPlugin({
+    //   name: 'common',
+    //   minChunks: 2, // 使用2次及2次以上时提取公共代码
+    //   // chunks: ['pageA', 'pageB']
+    // }),
     // new webpack.optimize.CommonsChunkPlugin({
     //   names: ['vendor', 'mainfest'],
     //   minChunks: Infinity
     // }),
     
-    new ExtractTextPlugin({
-      filename: '[name].min.css'
-    }),
-    new webpack.optimize.uglifyJsPlugin(),
-    new PurifyCSS({
-      paths: glob.sync([
-        path.join(__dirname, './*.html'),
-        path.join(__dirname, './src/*.js')
-      ])
+    new webpack.optimize.UglifyJsPlugin(),
+    // new PurifyCSS({
+    //   paths: glob.sync([
+    //     path.join(__dirname, './*.html'),
+    //     path.join(__dirname, './src/*.js')
+    //   ])
+    // })
+    new HtmlWebpackPlugin({
+      filename: 'index.html',
+      template: './index.html',
+      inject: true,
     })
   ]
 }
