@@ -1,0 +1,21 @@
+.base {
+  color: red;
+  transform: translate(0, 0, 0);
+}
+.pic {
+  height: 128px;
+  width: 128px;
+  background-repeat: no-repeat;
+  background-color: transparent;
+}
+body {
+  .pic1 {
+    background-image: url('../img/01@2x.png');
+  }
+  .pic2 {
+    background-image: url('../img/02@2x.png');
+  }
+  .pic3 {
+    background-image: url('../img/03@2x.png');
+  }
+}

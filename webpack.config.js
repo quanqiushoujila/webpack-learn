@@ -1,159 +1,104 @@
-const webpack = require('webpack')
-const path = require('path')
-const autoprefixer = require('autoprefixer')
-const glob = require('glob-all')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
-const PurifyCSS = require('purifycss-webpack')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+const webpack = require('webpack');
+const autoprefixer = require('autoprefixer');
+const path = require('path');
+
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin')
+
+const STATIC = '/static'
 
 module.exports = {
   entry: {
-    app: './src/js/app.js'
-    // 'pageA': './src/js/pageA.js',
-    // 'pageB': './src/js/pageB.js',
-    // 'vendor': ['jquery']
+    app: './src/static/js/app.js'
   },
   output: {
     path: path.resolve(__dirname, './dist'),
-    // publicPath: './dist',
-    filename: '[name].[hash:5].js',
-    chunkFilename: '[name].chunk.[hash:5].js'
+    filename: 'static/js/[name].[hash:5].js',
+    // publicPath: '/',
+    chunkFilename: '[name].chunkName.[hash:5].js'
   },
   module: {
     rules: [
       {
         test: /\.js$/,
-        use: {
-          loader: 'babel-loader'
-        },
+        use: [
+          {loader: 'babel-loader'}
+        ],
         exclude: '/node_modules/'
       },
       {
-        test: /\.css$/,
+        test: /\.css$/, 
         use: ExtractTextPlugin.extract({
-          fallback: {
-            loader: 'style-loader'
-          },
+          fallback: {loader: 'style-loader'},
           use: [
+            {loader: 'css-loader', options: {minimize: false}}
+          ],
+        }),
+        include: path.join(__dirname, 'src'),
+        exclude: '/node_modules/'
+      },
+      {
+        test: /\.scss$/,
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: [
+            {loader: 'css-loader', options: {minimize: false}},
             {
-              loader: 'css-loader',
+              loader: 'postcss-loader', 
               options: {
-                minimize: true // 是否压缩
+                ident: 'postcss', 
+                plugins: [require('postcss-sprites')({spritePath: 'static/img/sprites', retina: true,})]
               }
-            }
+            },
+            {loader: 'sass-loader'}
           ]
         })
       },
       {
-        test: /\.scss$/,
-        // 这里用了样式分离出来的插件，如果不想分离出来，可以直接这样写 loader:'style!css!sass'
-        loader: ExtractTextPlugin.extract({
-          fallback: {
-            loader: 'style-loader'
-          },
-          use: [
-            {
-              loader: 'css-loader',
-              options: {
-                minimize: false // 是否压缩
-              }
-            },
-            {
-              loader: 'postcss-loader',
-              options: {
-                ident: 'postcss',
-                plugins: [
-                  require('postcss-sprites')({
-                    spritePath: 'dist/img/sprite', // 原始大小的雪碧图放置位置
-                    retina: true // 是否识别分辨率标识
-                  }),
-                  require('autoprefixer')()
-                ]
-              }
-            },
-            {
-              loader: 'sass-loader'
-            }
-          ]
-        }) 
-      },
-      {
-        test: /\.(gif|png|jpg|jpeg)$/,
+        test: /\.(png|gif|jpe?g|svg)$/,
         use: [
-          /*{
-            loader: 'file-loader',
+          {
+            loader: 'url-loader',
             options: {
+              name: '[name].[hash:5].[ext]',
+              limit: 1000,
+              useRelativePath: true,
               publicPath: '',
-              output: 'dist/',
-              useRelativePath: true
+              outputPath: 'dist/'
             }
-          },*/
-          {
-            loader: 'url-loader?limit=1000&name=img/[name][hash:5].[ext]',
-            // options: {
-            //   name: '[name][hash:5].[ext]',
-            //   limit: 4000,
-            //   publicPath: '',
-            //   output: 'dist/',
-            //   useRelativePath: true
-            // }
           },
-          {
-            loader: 'img-loader',
-            options: {
-              pngquant: {
-                quality: 80
-              }
-            }
-          }
+          {loader: 'img-loader', options: {pngquant: {quality: 80}}}
         ]
       },
       {
         test: /\.(eot|woff2?|ttf|svg)$/,
         use: [
-          {
-            loader: 'url-loader?limit=1000&name=font/[name][hash:5].[ext]',
-            // options: {
-            //   name: '[name][hash:5].[ext]',
-            //   limit: 1000,
-            //   publicPath: '',
-            //   output: 'dist/'
-            // }
-          }
+          {loader: 'url-loader?limit=1000&name=static/font/[name].[ext]'}
         ]
       }
     ]
   },
-  // resolve: {
-  //   extensions: ['.js'],
-  //   alias: {
-  //     '@': resolve('src')
-  //   }
-  // },
+  devServer: {
+    port: 9090,
+    host: 'localhost',
+    overlay: true,
+    contentBase: path.join(__dirname, 'dist'),
+    compress: true, // 服务器返回浏览器的时候是否启动gzip压缩
+  },
   plugins: [
     new ExtractTextPlugin({
-      filename: '[name].min.[hash:5].css'
+      filename: 'static/css/[name].[hash:5].css'
     }),
-    // new webpack.optimize.CommonsChunkPlugin({
-    //   name: 'common',
-    //   minChunks: 2, // 使用2次及2次以上时提取公共代码
-    //   // chunks: ['pageA', 'pageB']
-    // }),
-    // new webpack.optimize.CommonsChunkPlugin({
-    //   names: ['vendor', 'mainfest'],
-    //   minChunks: Infinity
-    // }),
-    
-    new webpack.optimize.UglifyJsPlugin(),
-    // new PurifyCSS({
-    //   paths: glob.sync([
-    //     path.join(__dirname, './*.html'),
-    //     path.join(__dirname, './src/*.js')
-    //   ])
-    // })
+    /*new webpack.optimize.CommonsChunkPlugin({
+      name: 'common',
+      minChunks: 2
+    }),*/
+    // new webpack.optimize.UglifyJsPlugin(),
+    new CleanWebpackPlugin([path.join(__dirname, 'dist')]),
     new HtmlWebpackPlugin({
-      filename: 'index.html',
-      template: './index.html',
+      filename: 'view/index.html',
+      template: './src/view/index.html',
       inject: true,
     })
   ]
