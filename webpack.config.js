@@ -1,70 +1,60 @@
-const webpack = require('webpack');
-const autoprefixer = require('autoprefixer');
 const path = require('path');
+const webpack = require('webpack');
 const glob = require('glob-all');
+const autoprefixer = require('autoprefixer');
 
-const PurifyCss = require('purifycss-webpack');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const HtmlWepackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin')
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+const Purifycss = require('purifycss-webpack');
+const HtmlInlineChunkPlugin = require('html-webpack-inline-chunk-plugin');
 
-const STATIC = '/static'
+function resolve (filepath) {
+  return path.resolve(__dirname, filepath);
+}
 
-function resolve (dir) {
-  return path.join(__dirname, dir)
+function getHtmlTemplate (name) {
+  return {
+    template: `./src/view/${name}.html`,
+    filename: `${name}.html`,
+    inject: true,
+    hash: true,
+    mobile: true,
+    // minify: {
+    //   removeComments: true,
+    //   collapseWhitespace: true,
+    //   removeAttributeQuotes: true
+    // },
+  }
 }
 
 module.exports = {
   entry: {
     app: './src/static/js/app.js',
-    vendor: ['jquery'] // 第三方模块
+    vendor: ['jquery'],
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'static/js/bundle.[name].[hash:5].js',
-    publicPath: '/dist/',
-    chunkFilename: '[name].chunkName.js'
+    publicPath: '/',
+    filename: 'static/js/[name].bundle.[hash:5].js',
+    chunkFilename: '[name].js'
   },
   module: {
     rules: [
       {
         test: /\.js$/,
-        use: [
-          {loader: 'babel-loader'}
-        ],
-        exclude: '/node_modules/'
+        loader: 'babel-loader',
+        exclude: '/node_modules/',
       },
       {
-        test: /\.css$/, 
-        use: ExtractTextPlugin.extract({
-          fallback: {loader: 'style-loader'},
-          use: [
-            {loader: 'css-loader', options: {minimize: false}}
-          ],
-        }),
-        include: path.join(__dirname, 'src'),
-        exclude: '/node_modules/'
-      },
-      {
-        test: /\.scss$/,
-        /*use: [
-          {loader: 'style-loader'},
-          {loader: 'css-loader', options: {minimize: false}},
-          {
-            loader: 'postcss-loader', 
-            options: {
-              ident: 'postcss', 
-              plugins: [require('postcss-sprites')({spritePath: '/dist/static/img/sprites', retina: true,basePath: '../'})]
-            }
-          },
-          {loader: 'sass-loader'}
-        ]*/
+        test: /\.css$/,
         use: ExtractTextPlugin.extract({
           fallback: 'style-loader',
           use: [
-            {loader: 'css-loader', options: {minimize: false}},
+            {loader: 'css-loader', options: {minimize: true}},
             {
-              loader: 'postcss-loader', 
+              loader: 'postcss-loader',
               options: {
                 ident: 'postcss', 
                 plugins: [
@@ -72,101 +62,129 @@ module.exports = {
                   require('autoprefixer')()
                 ]
               }
+            }
+          ]
+        })
+        // use: [
+        //   {loader: 'style-loader'},
+        //   {loader: 'css-loader', options: {minimize: true}},
+        //   {loader: 'postcss-loader'}
+        // ]
+        // loader: ['style-loader', 'css-loader', 'postcss-loader']
+      },
+      {
+        test: /\.scss$/,
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: [
+            {loader: 'css-loader', options: {minimize: true}},
+            {
+              loader: 'postcss-loader',
+              options: {
+                ident: 'postcss', 
+                plugins: [
+                  require('postcss-sprites')({spritePath: '/dist/static/img/sprites', retina: true}),
+                  require('autoprefixer')()
+                ]
+              }
             },
             {loader: 'sass-loader'}
           ]
         })
+        // use: [
+        //   {loader: 'style-loader'},
+        //   {loader: 'css-loader', options: {minimize: true}},
+        //   {loader: 'postcss-loader'},
+        //   {loader: 'sass-loader'}
+        // ]
+        // loader: ['style-loader', 'css-loader', 'postcss-loader', 'scss-loader']
       },
       {
-        test: /\.(png|gif|jpe?g|svg)$/,
+        test: /\.(png|jpe?g|gif)$/,
         use: [
-          {loader: 'url-loader?limit=1000&name=[name].[ext]&outputPath=/static/img/'},
-          /*{
+          {
+            // loader: 'url-loader?limit=1024&name=/static/img/[name].[ext]', 
+            // options: {publicPath: ''}
             loader: 'url-loader',
             options: {
-              name: '[name].[hash:5].[ext]',
-              limit: 1000,
-              useRelativePath: true,
-              publicPath: 'dist/',
-              outputPath: 'dist/'
+              name: '[name].[ext]',
+              limit: 1024,
+              outputPath: 'static/img/',
             }
-          },*/
-          {loader: 'img-loader', options: {pngquant: {quality: 80}}}
+          },
+          {
+            loader: 'img-loader', 
+            options: {
+              pngquant: {quality: 80}
+            }
+          }
         ]
+        // loader: ['url-loader?limit=1024&name=[name].[ext]&outputPath=src/static/img/', 'img-loader']
       },
       {
-        test: /\.(eot|woff2?|ttf|svg)$/,
-        loader: 'url-loader?limit=1000&name=static/font/[name].[ext]'
+        test: /\.(woff2?|eot|svg|ttf)$/,
+        loader: 'url-loader',
+        options: {
+          name: '[name].[ext]',
+          limit: 1024,
+          outputPath: 'static/font/',
+        }
+        // loader: 'url-loader?limit=1024&name=/static/font/[name].[ext]',
+        // options: {publicPath: ''}
+      },
+      {
+        test: /\.string$/,
+        loader: 'html-loader'
       },
       {
         test: /\.html$/,
-        loader: 'html-loader', options: {attrs: ['img:src', 'img:data-src']}
-      },
-      {
-        test: /\.string$/, 
-        loader: 'html-loader'
+        loader: 'html-loader',
+        options: {attrs: ['img:src', 'img:data-src']}
       }
     ]
   },
-  devtool: 'source-map',
-  devServer: {
-    hot: true,
-    // inline: false,
-    // https:,
-    // historyApiFallback: true, // 任意的跳转或404响应可以指向 index.html 页面
-    // proxy: ,
-    // lazy: ,
-    // openpage: ,
-    hotOnly: true,
-    port: 9090,
-    host: 'localhost',
-    overlay: true,
-    contentBase: path.join(__dirname), // 本地服务器在哪个目录搭建页面，一般我们在当前目录即可；
-    // publicPath: './dist/view/'
-    // compress: true, // 服务器返回浏览器的时候是否启动gzip压缩
-  },
   resolve: {
-    extensions: ['.js'],
     alias: {
-      '@': resolve('src'),
-      'img': resolve('src/static/img/'),
+      '@': resolve('src/'),
+      'view': resolve('src/view/'),
       'css': resolve('src/static/css/'),
-      'font': resolve('src/static/font/'),
-      'js': resolve('src/static/js/'),
       'scss': resolve('src/static/scss/'),
-      'lib': resolve('src/static/lib/')
+      'js': resolve('src/static/js/'),
+      'img': resolve('src/static/img/'),
+      'font': resolve('src/static/font/'),
+      'lib': resolve('src/static/lib/'),
+      'assets': resolve('src/static/assets/')
     }
   },
+  devServer: {
+    port: 9090,
+    host: 'localhost',
+    hot: true,
+    hotOnly: true,
+    historyApiFallback: true,
+    contentBase: path.join(__dirname, 'dist')
+  },
+  devtool: 'cheap-module-source-map',
   plugins: [
     new ExtractTextPlugin({
       filename: 'static/css/[name].[hash:5].css'
     }),
-    // new webpack.optimize.CommonsChunkPlugin({
-    //   name: 'common',
-    //   minChunks: 2 // (模块必须被2个 入口chunk 共享)
-    //   // chunks: ["pageA", "pageB"], // (只使用这些 入口chunk)
-    // }),
-    new PurifyCss({
-      paths: glob.sync([
-        path.join(__dirname, './*.html'),
-        path.join(__dirname, './src/static/*.js')
-      ])
+    new webpack.optimize.CommonsChunkPlugin({
+      names: ['vendor', 'manifest'],
+      minChunks: Infinity
     }),
-    // new webpack.optimize.UglifyJsPlugin(),
+    // new Purifycss({
+    //   paths: glob.sync([
+    //     path.join(__dirname, './*.html'),
+    //     path.join(__dirname, './src/static/*.js')
+    //   ])
+    // }),
+    new HtmlInlineChunkPlugin({
+      inlineChunks: ['manifest']
+    }),
     new CleanWebpackPlugin([path.join(__dirname, 'dist')]),
-    new webpack.HotModuleReplacementPlugin(),
-    new HtmlWebpackPlugin({
-      filename: 'index.html',
-      template: './src/index.html',
-      inject: true,
-      // mobile: true,
-      // chunks : ['common', name],
-      // chunks: ['app'],
-      // minify: {
-      //   removeComments: true,
-      //   collapseWhitespace: true,
-      //   removeAttributeQuotes: true
-      // },
-    })
+    new HtmlWepackPlugin(getHtmlTemplate('index')),
+    new webpack.HotModuleReplacementPlugin()
+    // new webpack.optimize.UglifyJsPlugin(),
   ]
 }
