@@ -44,19 +44,31 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        loader: 'babel-loader',
-        exclude: '/node_modules/',
+        loader: 'babel-loader!eslint-loader'
+       /* use: [
+          {
+            loader: 'babel-loader',
+            exclude: '/node_modules/'
+          },
+          {
+            loader: 'eslint-loader',
+            exclude: '/node_modules/',
+            options: {
+              formatter: require('eslint-friendly-formatter')
+            }
+          }
+        ]*/
       },
       {
         test: /\.css$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
+        /*use: ExtractTextPlugin.extract({
+          fallback: {loader: 'style-loader', options: {sourceMap: true}},
           use: [
-            {loader: 'css-loader', options: {minimize: true}},
+            {loader: 'css-loader', options: {minimize: true, sourceMap: true}},
             {
               loader: 'postcss-loader',
               options: {
-                ident: 'postcss', 
+                ident: 'postcss',
                 plugins: [
                   require('postcss-sprites')({spritePath: '/dist/static/img/sprites', retina: true,basePath: '../'}),
                   require('autoprefixer')()
@@ -64,20 +76,30 @@ module.exports = {
               }
             }
           ]
-        })
-        // use: [
-        //   {loader: 'style-loader'},
-        //   {loader: 'css-loader', options: {minimize: true}},
-        //   {loader: 'postcss-loader'}
-        // ]
+        })*/
+        use: [
+          {loader: 'style-loader', options: {sourceMap: true}},
+          {loader: 'css-loader', options: {minimize: true, sourceMap: true}},
+          {
+            loader: 'postcss-loader',
+            options: {
+              ident: 'postcss',
+              sourceMap: true,
+              plugins: [
+                require('postcss-sprites')({spritePath: '/dist/static/img/sprites', retina: true}),
+                require('autoprefixer')()
+              ]
+            }
+          }
+        ]
         // loader: ['style-loader', 'css-loader', 'postcss-loader']
       },
       {
         test: /\.scss$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
+        /*use: ExtractTextPlugin.extract({
+          fallback: {loader: 'style-loader', options: {sourceMap: true}},
           use: [
-            {loader: 'css-loader', options: {minimize: true}},
+            {loader: 'css-loader', options: {minimize: true, sourceMap: true}},
             {
               loader: 'postcss-loader',
               options: {
@@ -88,15 +110,25 @@ module.exports = {
                 ]
               }
             },
-            {loader: 'sass-loader'}
+            {loader: 'sass-loader', options: {sourceMap: true}}
           ]
-        })
-        // use: [
-        //   {loader: 'style-loader'},
-        //   {loader: 'css-loader', options: {minimize: true}},
-        //   {loader: 'postcss-loader'},
-        //   {loader: 'sass-loader'}
-        // ]
+        })*/
+        use: [
+          {loader: 'style-loader', options: {sourceMap: true}},
+          {loader: 'css-loader', options: {minimize: true, sourceMap: true}},
+          {
+            loader: 'postcss-loader',
+            options: {
+              ident: 'postcss',
+              sourceMap: true,
+              plugins: [
+                require('postcss-sprites')({spritePath: '/dist/static/img/sprites', retina: true}),
+                require('autoprefixer')()
+              ]
+            }
+          },
+          {loader: 'sass-loader', options: {sourceMap: true}}
+        ]
         // loader: ['style-loader', 'css-loader', 'postcss-loader', 'scss-loader']
       },
       {
@@ -157,14 +189,14 @@ module.exports = {
     }
   },
   devServer: {
-    port: 9090,
+    port: 9999,
     host: 'localhost',
     hot: true,
-    hotOnly: true,
     historyApiFallback: true,
-    contentBase: path.join(__dirname, 'dist')
+    contentBase: path.join(__dirname, 'dist'),
+    overlay: true,
   },
-  devtool: 'cheap-module-source-map',
+  devtool: 'cheap-module-eval-source-map',
   plugins: [
     new ExtractTextPlugin({
       filename: 'static/css/[name].[hash:5].css'
@@ -185,6 +217,6 @@ module.exports = {
     new CleanWebpackPlugin([path.join(__dirname, 'dist')]),
     new HtmlWepackPlugin(getHtmlTemplate('index')),
     new webpack.HotModuleReplacementPlugin()
-    // new webpack.optimize.UglifyJsPlugin(),
+    // new webpack.optimize.UglifyJsPlugin({sourceMap: true}),
   ]
 }
