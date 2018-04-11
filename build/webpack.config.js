@@ -86,7 +86,7 @@ module.exports = {
               ident: 'postcss',
               sourceMap: true,
               plugins: [
-                require('postcss-sprites')({spritePath: '/dist/static/img/sprites', retina: true}),
+                require('postcss-sprites')({spritePath: '../dist/static/img/sprites', retina: true}),
                 require('autoprefixer')()
               ]
             }
@@ -122,7 +122,7 @@ module.exports = {
               ident: 'postcss',
               sourceMap: true,
               plugins: [
-                require('postcss-sprites')({spritePath: '/dist/static/img/sprites', retina: true}),
+                require('postcss-sprites')({spritePath: '../dist/static/img/sprites', retina: true}),
                 require('autoprefixer')()
               ]
             }
@@ -187,15 +187,15 @@ module.exports = {
   },
   resolve: {
     alias: {
-      '@': resolve('src/'),
-      'view': resolve('src/view/'),
-      'css': resolve('src/static/css/'),
-      'scss': resolve('src/static/scss/'),
-      'js': resolve('src/static/js/'),
-      'img': resolve('src/static/img/'),
-      'font': resolve('src/static/font/'),
-      'lib': resolve('src/static/lib/'),
-      'assets': resolve('src/static/assets/')
+      '@': resolve('../src/'),
+      'view': resolve('../src/view/'),
+      'css': resolve('../src/static/css/'),
+      'scss': resolve('../src/static/scss/'),
+      'js': resolve('../src/static/js/'),
+      'img': resolve('../src/static/img/'),
+      'font': resolve('../src/static/font/'),
+      'lib': resolve('../src/static/lib/'),
+      'assets': resolve('../src/static/assets/')
     }
   },
   devServer: {
