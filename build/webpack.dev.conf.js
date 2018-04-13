@@ -3,6 +3,7 @@ const path = require('path');
 
 module.exports = {
   devtool: 'cheap-module-eval-source-map',
+  // devtool: 'eval-source-map',
   devServer: {
     port: 9999,
     host: 'localhost',

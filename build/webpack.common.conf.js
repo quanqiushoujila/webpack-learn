@@ -4,7 +4,6 @@ const autoprefixer = require('autoprefixer');
 const merge = require('webpack-merge');
 const HtmlWepackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 const productionConfig = require('./webpack.prod.conf.js');
 const developmentConfig =  require('./webpack.dev.conf.js');
@@ -29,10 +28,15 @@ function getHtmlTemplate (name) {
 }
 
 const generateConfig = env => {
-  const scriptLoaders = 'babel-loader'.concat(
-    env === 'production' ? 
-    '':
-    '!eslint-loader'
+
+  const scriptLoaders = [{loader: 'babel-loader'}].concat(
+    env === 'production' ? [] :
+    [{
+      loader: 'eslint-loader',
+      options: {
+        formatter: require('eslint-friendly-formatter')
+      }
+    }]
   );
   const fileLoaders = (env, filename) => {
     return env === 'production' ? [
@@ -89,11 +93,11 @@ const generateConfig = env => {
   return {
     entry: {
       app: './src/static/js/app.js',
-      vendor: ['jquery'],
+      vendor: ['babel-polyfill', 'jquery']
     },
     output: {
       path: path.resolve(__dirname, '../dist'),
-      publicPath: '/',
+      publicPath: env === 'production' ? '/dist/' : '/',
       filename: 'static/js/[name].bundle.[hash:5].js',
       chunkFilename: '[name].js'
     },
@@ -101,9 +105,17 @@ const generateConfig = env => {
       rules: [
         {
           test: /\.js$/,
-          loader: scriptLoaders,
           exclude: '/node_modules/',
-          include: '/src/'
+          include: '/src/',
+          use: [
+            {loader: 'babel-loader'},
+            {
+              loader: 'eslint-loader',
+              options: {
+                formatter: require('eslint-friendly-formatter')
+              }
+            }
+          ]
         },
         {
           test: /\.css$/,
@@ -132,6 +144,7 @@ const generateConfig = env => {
         }
       ]
     },
+    devtool: 'cheap-module-eval-source-map',
     resolve: {
       alias: {
         '@': resolve('src/'),
@@ -155,15 +168,10 @@ const generateConfig = env => {
     },
     devtool: 'cheap-module-eval-source-map',
     plugins: [
-      new CleanWebpackPlugin(
-        ['dist'],
-        {
-            root: path.join(__dirname, '..'), //根目录
-            verbose:  true, //开启在控制台输出信息
-            dry: false //启用删除文件
-        }
-      ),
-      new HtmlWepackPlugin(getHtmlTemplate('index'))
+      new HtmlWepackPlugin(getHtmlTemplate('index')),
+      // new webpack.DefinePlugin({
+      //   $: 'jquery'
+      // })
     ]
   }
 }

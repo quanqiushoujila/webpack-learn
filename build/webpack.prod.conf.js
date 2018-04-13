@@ -6,7 +6,7 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const Purifycss = require('purifycss-webpack');
 const HtmlInlineChunkPlugin = require('html-webpack-inline-chunk-plugin');
-
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
   devtool: 'source-map',
@@ -27,6 +27,14 @@ module.exports = {
     new HtmlInlineChunkPlugin({
       inlineChunks: ['manifest']
     }),
-    new webpack.optimize.UglifyJsPlugin({sourceMap: true})
+    new webpack.optimize.UglifyJsPlugin({sourceMap: false}),
+    new CleanWebpackPlugin(
+      ['dist'],
+      {
+          root: path.join(__dirname, '..'), //根目录
+          verbose:  true, //开启在控制台输出信息
+          dry: false //启用删除文件
+      }
+    )
   ]
 }

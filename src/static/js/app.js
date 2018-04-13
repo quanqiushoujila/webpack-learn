@@ -5,8 +5,11 @@ import 'scss/common.scss'
 // import pageA from './pageA.js'
 // import pageB from './pageB.js'
 
+// import "babel-polyfill"
 import $ from 'jquery'
-$('body').css('color', 'red')
+// import 'babel-polyfill'
+let s1 = Symbol('foo');
+$('body').css('color', 'red');
 setTimeout(function () {
-  console.log('app123')
+  console.log('app12345');
 }, 1000)
