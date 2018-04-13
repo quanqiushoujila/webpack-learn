@@ -9,8 +9,8 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const productionConfig = require('./webpack.prod.conf.js');
 const developmentConfig =  require('./webpack.dev.conf.js');
 
-function resolve (filepath) {
-  return path.resolve(__dirname, '..', filepath);
+function resolve (dir) {
+  return path.resolve(__dirname, '..', dir);
 }
 
 function getHtmlTemplate (name) {
@@ -20,11 +20,11 @@ function getHtmlTemplate (name) {
     inject: true,
     hash: true,
     mobile: true,
-    // minify: {
-    //   removeComments: true,
-    //   collapseWhitespace: true,
-    //   removeAttributeQuotes: true
-    // },
+    minify: {
+      removeComments: true,
+      collapseWhitespace: true,
+      removeAttributeQuotes: true
+    },
   }
 }
 
@@ -88,7 +88,7 @@ const generateConfig = env => {
   
   return {
     entry: {
-      app: '../src/static/js/app.js',
+      app: './src/static/js/app.js',
       vendor: ['jquery'],
     },
     output: {
@@ -101,7 +101,9 @@ const generateConfig = env => {
       rules: [
         {
           test: /\.js$/,
-          loader: scriptLoaders
+          loader: scriptLoaders,
+          exclude: '/node_modules/',
+          include: '/src/'
         },
         {
           test: /\.css$/,
@@ -153,7 +155,14 @@ const generateConfig = env => {
     },
     devtool: 'cheap-module-eval-source-map',
     plugins: [
-      new CleanWebpackPlugin([path.join(__dirname, '../dist')]),
+      new CleanWebpackPlugin(
+        ['dist'],
+        {
+            root: path.join(__dirname, '..'), //根目录
+            verbose:  true, //开启在控制台输出信息
+            dry: false //启用删除文件
+        }
+      ),
       new HtmlWepackPlugin(getHtmlTemplate('index'))
     ]
   }
