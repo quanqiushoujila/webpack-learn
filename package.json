@@ -1,14 +1,13 @@
 {
   "name": "webpack",
   "version": "1.0.0",
-  "description": "",
+  "description": "webpack test",
   "scripts": {
-    "dev": "webpack-dev-server --env development --progress --inline --open --config build/webpack.common.conf.js",
-    "dev1": "webpack-dev-server --env development --progress --inline --open --config build/webpack.config.js",
-    "start": "webpack-dev-server --progress --inline --open",
-    "bulid": "webpack --env production --config build/webpack.common.conf.js"
+    "dev": "webpack-dev-server --env development --progress --inline --config build/webpack.common.conf.js",
+    "start": "npm run dev",
+    "build": "webpack --env production --config build/webpack.common.conf.js"
   },
-  "author": "",
+  "author": "kk",
   "license": "ISC",
   "devDependencies": {
     "autoprefixer": "^8.2.0",

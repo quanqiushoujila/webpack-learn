@@ -3,14 +3,14 @@ const webpack = require('webpack');
 const autoprefixer = require('autoprefixer');
 const merge = require('webpack-merge');
 const HtmlWepackPlugin = require('html-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 const productionConfig = require('./webpack.prod.conf.js');
 const developmentConfig =  require('./webpack.dev.conf.js');
 
 function resolve (filepath) {
-  return path.resolve(__dirname, filepath);
+  return path.resolve(__dirname, '..', filepath);
 }
 
 function getHtmlTemplate (name) {
@@ -34,37 +34,6 @@ const generateConfig = env => {
     '':
     '!eslint-loader'
   );
-
-  const cssLoaders = 
-    [
-      {loader: 'css-loader', options: {minimize: env === 'production', sourceMap: env === 'development'}}
-    ].concat(
-      {
-        loader: 'postcss-loader',
-        options: {
-          ident: 'postcss',
-          sourceMap: env === 'development',
-          plugins: [
-            require('postcss-cssnext')(),
-            require('autoprefixer')()
-          ].concat(env === 'production' ? 
-            [] :
-            [require('postcss-sprites')({spritePath: '/dist/static/img/sprites', retina: true})]
-          )
-        }
-      }
-    );
-  
-  const styleLoaders = env === 'production' ?
-    ExtractTextPlugin.extract({
-      fallback: {loader: 'style-loader', options: {sourceMap: env === 'development'}},
-      use: cssLoaders
-    }) :
-    [{loader: 'style-loader', options: {sourceMap: env === 'development'}}].concat(
-      cssLoaders
-      )
-    ;
-  
   const fileLoaders = (env, filename) => {
     return env === 'production' ? [
       {
@@ -85,11 +54,41 @@ const generateConfig = env => {
         }
       }
     ]
-  }
-
+  };
+  const cssLoaders = 
+    [
+      {loader: 'css-loader', options: {minimize: env === 'production', sourceMap: env === 'development'}}
+    ].concat(
+      [
+        {
+          loader: 'postcss-loader',
+          options: {
+            ident: 'postcss',
+            sourceMap: env === 'development',
+            plugins: [
+              require('postcss-cssnext')(),
+              require('autoprefixer')()
+            ].concat(env === 'production' ? 
+              [] :
+              [require('postcss-sprites')({spritePath: '/dist/static/img/sprites', retina: true})]
+            )
+          }
+        }
+      ]
+    );
+  
+  const styleLoaders = env === 'production' ?
+    ExtractTextPlugin.extract({
+      fallback: {loader: 'style-loader', options: {sourceMap: env === 'development'}},
+      use: cssLoaders
+    }) :
+    [{loader: 'style-loader', options: {sourceMap: env === 'development'}}].concat(
+      cssLoaders
+      );
+  
   return {
     entry: {
-      app: './src/static/js/app.js',
+      app: '../src/static/js/app.js',
       vendor: ['jquery'],
     },
     output: {
@@ -110,18 +109,11 @@ const generateConfig = env => {
         },
         {
           test: /\.scss$/,
-          use: styleLoaders.concat([{loader: 'sass-loader', options: {sourceMap: env === 'development'}}])
+          use: styleLoaders.concat({loader: 'sass-loader', options: {sourceMap: env === 'development'}})
         },
         {
           test: /\.(png|jpe?g|gif)$/,
-          use: fileLoaders(env, 'img').concat(env === 'production' ? 
-            [{
-                loader: 'img-loader', 
-                options: {
-                  pngquant: {quality: 80}
-                }
-              }] : []
-          )
+          use: fileLoaders(env, 'img')
         },
         {
           test: /\.(woff2?|eot|svg|ttf)$/,
@@ -139,17 +131,16 @@ const generateConfig = env => {
       ]
     },
     resolve: {
-      extensions: ['js'],
       alias: {
-        '@': resolve('../src/'),
-        'view': resolve('../src/view/'),
-        'css': resolve('../src/static/css/'),
-        'scss': resolve('../src/static/scss/'),
-        'js': resolve('../src/static/js/'),
-        'img': resolve('../src/static/img/'),
-        'font': resolve('../src/static/font/'),
-        'lib': resolve('../src/static/lib/'),
-        'assets': resolve('../src/static/assets/')
+        '@': resolve('src/'),
+        'view': resolve('src/view/'),
+        'css': resolve('src/static/css/'),
+        'scss': resolve('src/static/scss/'),
+        'js': resolve('src/static/js/'),
+        'img': resolve('src/static/img/'),
+        'font': resolve('src/static/font/'),
+        'lib': resolve('src/static/lib/'),
+        'assets': resolve('src/static/assets/')
       }
     },
     devServer: {
@@ -157,13 +148,11 @@ const generateConfig = env => {
       host: 'localhost',
       hot: true,
       historyApiFallback: true,
-      contentBase: path.join(__dirname, '../dist'),
-      overlay: true
+      contentBase: path.join(__dirname, 'dist'),
+      overlay: true,
     },
+    devtool: 'cheap-module-eval-source-map',
     plugins: [
-      new ExtractTextPlugin({
-        filename: 'static/css/[name].[hash:5].css'
-      }),
       new CleanWebpackPlugin([path.join(__dirname, '../dist')]),
       new HtmlWepackPlugin(getHtmlTemplate('index'))
     ]

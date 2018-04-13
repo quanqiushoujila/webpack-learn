@@ -61,7 +61,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        /*use: ExtractTextPlugin.extract({
+        use: ExtractTextPlugin.extract({
           fallback: {loader: 'style-loader', options: {sourceMap: true}},
           use: [
             {loader: 'css-loader', options: {minimize: true, sourceMap: true}},
@@ -69,6 +69,7 @@ module.exports = {
               loader: 'postcss-loader',
               options: {
                 ident: 'postcss',
+                sourceMap: true,
                 plugins: [
                   require('postcss-sprites')({spritePath: '/dist/static/img/sprites', retina: true,basePath: '../'}),
                   require('autoprefixer')()
@@ -76,8 +77,8 @@ module.exports = {
               }
             }
           ]
-        })*/
-        use: [
+        })
+        /*use: [
           {loader: 'style-loader', options: {sourceMap: true}},
           {loader: 'css-loader', options: {minimize: true, sourceMap: true}},
           {
@@ -91,12 +92,12 @@ module.exports = {
               ]
             }
           }
-        ]
+        ]*/
         // loader: ['style-loader', 'css-loader', 'postcss-loader']
       },
       {
         test: /\.scss$/,
-        /*use: ExtractTextPlugin.extract({
+        use: ExtractTextPlugin.extract({
           fallback: {loader: 'style-loader', options: {sourceMap: true}},
           use: [
             {loader: 'css-loader', options: {minimize: true, sourceMap: true}},
@@ -104,6 +105,7 @@ module.exports = {
               loader: 'postcss-loader',
               options: {
                 ident: 'postcss', 
+                sourceMap: true,
                 plugins: [
                   require('postcss-sprites')({spritePath: '/dist/static/img/sprites', retina: true}),
                   require('autoprefixer')()
@@ -112,8 +114,8 @@ module.exports = {
             },
             {loader: 'sass-loader', options: {sourceMap: true}}
           ]
-        })*/
-        use: [
+        })
+        /*use: [
           {loader: 'style-loader', options: {sourceMap: true}},
           {loader: 'css-loader', options: {minimize: true, sourceMap: true}},
           {
@@ -128,7 +130,7 @@ module.exports = {
             }
           },
           {loader: 'sass-loader', options: {sourceMap: true}}
-        ]
+        ]*/
         // loader: ['style-loader', 'css-loader', 'postcss-loader', 'scss-loader']
       },
       {
