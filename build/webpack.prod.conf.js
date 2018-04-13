@@ -14,9 +14,33 @@ module.exports = {
     new ExtractTextPlugin({
       filename: 'static/css/[name].[hash:5].css'
     }),
-    new webpack.optimize.CommonsChunkPlugin({
-      names: ['vendor', 'manifest'],
-      minChunks: Infinity
+    new webpack.optimize.SplitChunksPlugin({
+      chunks: 'all',
+      name: true,
+      cacheGroups: {
+        default: {
+          minChunks: 2,
+          priority: -20,
+          reuseExistingChunk: true,
+        },
+        //打包重复出现的代码
+        vendor: {
+          chunks: 'initial',
+          minChunks: 2,
+          maxInitialRequests: 5,
+          minSize: 0,
+          name: 'vendor'
+        },
+        //打包第三方类库
+        commons: {
+          name: "commons",
+          chunks: "initial",
+          minChunks: Infinity
+        }
+      }
+    }),
+    new webpack.optimize.RuntimeChunkPlugin({
+      name: "manifest"
     }),
     // new Purifycss({
     //   paths: glob.sync([

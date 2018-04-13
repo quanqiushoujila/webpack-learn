@@ -159,8 +159,7 @@ const generateConfig = env => {
     },
     devtool: 'cheap-module-eval-source-map',
     plugins: [
-      new HtmlWepackPlugin(getHtmlTemplate('index')),
-      new webpack.NamedModulesPlugin()
+      new HtmlWepackPlugin(getHtmlTemplate('index'))
       // new webpack.DefinePlugin({
       //   $: 'jquery'
       // })
