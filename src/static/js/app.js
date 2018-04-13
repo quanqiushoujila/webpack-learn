@@ -8,8 +8,7 @@ import 'scss/common.scss'
 // import "babel-polyfill"
 import $ from 'jquery'
 // import 'babel-polyfill'
-let s1 = Symbol('foo');
-$('body').css('color', 'red');
+$('body').css('color', 'red')
 setTimeout(function () {
-  console.log('app12345');
+  console.log('app12345')
 }, 1000)

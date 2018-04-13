@@ -238,7 +238,8 @@ module.exports = {
     }),
     new CleanWebpackPlugin([path.join(__dirname, 'dist')]),
     new HtmlWepackPlugin(getHtmlTemplate('index')),
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NamedModulesPlugin()
     // new webpack.optimize.UglifyJsPlugin({sourceMap: true}),
   ]
 }

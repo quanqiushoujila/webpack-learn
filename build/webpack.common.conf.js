@@ -97,7 +97,7 @@ const generateConfig = env => {
     },
     output: {
       path: path.resolve(__dirname, '../dist'),
-      publicPath: env === 'production' ? '/dist/' : '/',
+      publicPath: '/',
       filename: 'static/js/[name].bundle.[hash:5].js',
       chunkFilename: '[name].js'
     },
@@ -106,16 +106,7 @@ const generateConfig = env => {
         {
           test: /\.js$/,
           exclude: '/node_modules/',
-          include: '/src/',
-          use: [
-            {loader: 'babel-loader'},
-            {
-              loader: 'eslint-loader',
-              options: {
-                formatter: require('eslint-friendly-formatter')
-              }
-            }
-          ]
+          use: scriptLoaders
         },
         {
           test: /\.css$/,
@@ -169,6 +160,7 @@ const generateConfig = env => {
     devtool: 'cheap-module-eval-source-map',
     plugins: [
       new HtmlWepackPlugin(getHtmlTemplate('index')),
+      new webpack.NamedModulesPlugin()
       // new webpack.DefinePlugin({
       //   $: 'jquery'
       // })
