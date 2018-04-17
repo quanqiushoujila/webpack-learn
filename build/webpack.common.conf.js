@@ -72,7 +72,7 @@ const generateConfig = env => {
             plugins: [
               require('postcss-cssnext')(),
               require('autoprefixer')()
-            ].concat(env === 'production' ? 
+            ].concat(env === 'development' ? 
               [] :
               [require('postcss-sprites')({spritePath: '/dist/static/img/sprites', retina: true})]
             )
@@ -97,6 +97,7 @@ const generateConfig = env => {
     },
     output: {
       path: path.resolve(__dirname, '../dist'),
+      // publicPath: '/',
       publicPath: env === 'production' ? '/dist/' : '/',
       filename: 'static/js/[name].bundle.[hash:5].js',
       chunkFilename: '[name].js'
@@ -137,11 +138,11 @@ const generateConfig = env => {
           test: /\.string$/,
           loader: 'html-loader'
         },
-        {
-          test: /\.html$/,
-          loader: 'html-loader',
-          options: {attrs: ['img:src', 'img:data-src']}
-        }
+        // {
+        //   test: /\.html$/,
+        //   loader: 'html-loader',
+        //   options: {attrs: ['img:src', 'img:data-src']}
+        // }
       ]
     },
     devtool: 'cheap-module-eval-source-map',

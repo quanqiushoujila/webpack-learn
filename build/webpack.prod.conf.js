@@ -20,14 +20,14 @@ module.exports = {
     }),
     // new Purifycss({
     //   paths: glob.sync([
-    //     path.join(__dirname, './*.html'),
-    //     path.join(__dirname, './src/static/*.js')
+    //     path.join(__dirname, '../src/view/*.html'),
+    //     path.join(__dirname, '../src/static/*.js')
     //   ])
     // }),
     new HtmlInlineChunkPlugin({
       inlineChunks: ['manifest']
     }),
-    new webpack.optimize.UglifyJsPlugin({sourceMap: false}),
+    new UglifyJsPlugin(),
     new CleanWebpackPlugin(
       ['dist'],
       {

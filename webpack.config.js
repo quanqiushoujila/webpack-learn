@@ -217,18 +217,18 @@ module.exports = {
       names: ['vendor', 'manifest'],
       minChunks: Infinity
     }),
-    // new Purifycss({
-    //   paths: glob.sync([
-    //     path.join(__dirname, './*.html'),
-    //     path.join(__dirname, './src/static/*.js')
-    //   ])
-    // }),
+    new Purifycss({
+      paths: glob.sync([
+        path.join(__dirname, './*.html'),
+        path.join(__dirname, './src/static/*.js')
+      ])
+    }),
     new HtmlInlineChunkPlugin({
       inlineChunks: ['manifest']
     }),
     new CleanWebpackPlugin([path.join(__dirname, 'dist')]),
     new HtmlWepackPlugin(getHtmlTemplate('index')),
-    new webpack.HotModuleReplacementPlugin()
-    // new webpack.optimize.UglifyJsPlugin({sourceMap: true}),
+    new webpack.HotModuleReplacementPlugin(),
+    new UglifyJsPlugin(),
   ]
 }

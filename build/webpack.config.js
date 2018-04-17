@@ -239,6 +239,6 @@ module.exports = {
     new CleanWebpackPlugin([path.join(__dirname, 'dist')]),
     new HtmlWepackPlugin(getHtmlTemplate('index')),
     new webpack.HotModuleReplacementPlugin()
-    // new webpack.optimize.UglifyJsPlugin({sourceMap: true}),
+    // new UglifyJsPlugin({sourceMap: true}),
   ]
 }

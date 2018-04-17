@@ -9,7 +9,8 @@
   <div class="pic pic1"></div>
   <div class="pic pic2"></div>
   <div class="pic pic3"></div>
-  <img src="../static/assets/img/img1.jpg" data-src="../static/assets/img/img1.jpg">
-  <%= require('html-loader!./template/footer.html') %>
+  <!-- <img src="../static/assets/img/img1.jpg"> -->
+  <img src="${require(`../static/assets/img/img1.jpg`)}" data-src="${require(`../static/assets/img/img1.jpg`)}">
+  ${require( `html-loader!./template/footer.html`)}
 </body>
 </html>
