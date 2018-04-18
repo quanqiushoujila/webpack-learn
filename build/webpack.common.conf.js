@@ -12,18 +12,19 @@ function resolve (dir) {
   return path.resolve(__dirname, '..', dir);
 }
 
-function getHtmlTemplate (name) {
+function getHtmlTemplate (dir, title) {
   return {
-    template: `./src/view/${name}.html`,
-    filename: `view/${name}.html`,
-    inject: true,
+    template: `./src/view/${dir}.html`,
+    filename: `view/${dir}.html`,
+    title: title || '',
+    inject: 'body',
     hash: true,
     mobile: true,
     minify: {
       removeComments: true,
       collapseWhitespace: true,
       removeAttributeQuotes: true
-    },
+    }
   }
 }
 
@@ -71,11 +72,9 @@ const generateConfig = env => {
             sourceMap: env === 'development',
             plugins: [
               require('postcss-cssnext')(),
-              require('autoprefixer')()
-            ].concat(env === 'development' ? 
-              [] :
-              [require('postcss-sprites')({spritePath: '/dist/static/img/sprites', retina: true})]
-            )
+              require('autoprefixer')(),
+              require('postcss-sprites')({spritePath: '/dist/static/img/sprites', retina: true})
+            ]
           }
         }
       ]
@@ -107,7 +106,7 @@ const generateConfig = env => {
         {
           test: /\.js$/,
           exclude: '/node_modules/',
-          include: '/src/',
+          // include: '/src/',
           use: [
             {loader: 'babel-loader'},
             {
@@ -160,7 +159,8 @@ const generateConfig = env => {
       }
     },
     devServer: {
-      port: 9999,
+      inline: true,
+      port: 9001,
       host: 'localhost',
       hot: true,
       historyApiFallback: true,
@@ -169,7 +169,7 @@ const generateConfig = env => {
     },
     devtool: 'cheap-module-eval-source-map',
     plugins: [
-      new HtmlWepackPlugin(getHtmlTemplate('index')),
+      new HtmlWepackPlugin(getHtmlTemplate('index', '首页')),
       // new webpack.DefinePlugin({
       //   $: 'jquery'
       // })

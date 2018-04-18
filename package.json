@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "webpack test",
   "scripts": {
-    "dev": "webpack-dev-server --env development --progress --inline --open --config build/webpack.common.conf.js",
+    "dev": "webpack-dev-server --env development --progress --colors --open --config build/webpack.common.conf.js",
     "start": "npm run dev",
-    "test": "webpack-dev-server --progress --inline --open",
-    "test1": "webpack-dev-server --progress --inline --open --config build/webpack.config.js",
+    "test": "webpack-dev-server --progress --colors --open",
+    "test1": "webpack-dev-server --progress --colors --open --config build/webpack.config.js",
     "build": "webpack --env production --config build/webpack.common.conf.js"
   },
   "author": "kk",
