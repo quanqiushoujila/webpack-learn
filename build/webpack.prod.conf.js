@@ -30,7 +30,13 @@ module.exports = {
     new HtmlInlineChunkPlugin({
       inlineChunks: ['manifest']
     }),
-    new UglifyJsPlugin(),
+    new UglifyJsPlugin({
+      uglifyOptions: {
+        compress: {
+          drop_console: true
+        }
+      }
+    }),
     new CleanWebpackPlugin(
       ['dist'],
       {
