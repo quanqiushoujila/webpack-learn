@@ -7,12 +7,15 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const Purifycss = require('purifycss-webpack');
 const HtmlInlineChunkPlugin = require('html-webpack-inline-chunk-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
   devtool: 'source-map',
   plugins: [
+    new BundleAnalyzerPlugin(),
+    new webpack.NamedChunksPlugin(),
     new ExtractTextPlugin({
-      filename: 'static/css/[name].[hash:5].css'
+      filename: 'static/css/[name].[chunkhash:5].css'
     }),
     new webpack.optimize.CommonsChunkPlugin({
       names: ['vendor', 'manifest'],

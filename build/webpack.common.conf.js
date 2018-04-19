@@ -105,8 +105,8 @@ const generateConfig = env => {
       rules: [
         {
           test: /\.js$/,
-          exclude: '/node_modules/',
-          // include: '/src/',
+          // exclude: resolve('node_modules'),
+          include: resolve('src'),
           use: [
             {loader: 'babel-loader'},
             {
@@ -155,6 +155,7 @@ const generateConfig = env => {
         'img': resolve('src/static/img/'),
         'font': resolve('src/static/font/'),
         'lib': resolve('src/static/lib/'),
+        'page': resolve('src/view/page/'),
         'assets': resolve('src/static/assets/')
       }
     },
