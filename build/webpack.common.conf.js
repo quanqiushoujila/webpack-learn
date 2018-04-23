@@ -12,14 +12,15 @@ function resolve (dir) {
   return path.resolve(__dirname, '..', dir);
 }
 
-function getHtmlTemplate (dir, title) {
+function getHtmlTemplate (name, title) {
   return {
-    template: `./src/view/${dir}.html`,
-    filename: `view/${dir}.html`,
+    template: `./src/view/${name}.html`,
+    filename: `view/${name}.html`,
     title: title || '',
     inject: 'body',
     hash: true,
     mobile: true,
+    chunk: [name, 'app'],
     minify: {
       removeComments: true,
       collapseWhitespace: true,
@@ -91,13 +92,15 @@ const generateConfig = env => {
   
   return {
     entry: {
-      app: './src/static/js/app.js',
+      app: './src/js/app.js',
+      index: './src/page/index/index.js',
+      index2: './src/page/index2/index.js',
       vendor: ['babel-polyfill', 'jquery']
     },
     output: {
       path: path.resolve(__dirname, '../dist'),
-      // publicPath: '/',
-      publicPath: env === 'production' ? '/dist/' : '/',
+      publicPath: '/',
+      // publicPath: env === 'production' ? '/dist/' : '/',
       filename: 'static/js/[name].bundle.[hash:5].js',
       chunkFilename: '[name].js'
     },
@@ -149,14 +152,13 @@ const generateConfig = env => {
       alias: {
         '@': resolve('src/'),
         'view': resolve('src/view/'),
-        'css': resolve('src/static/css/'),
-        'scss': resolve('src/static/scss/'),
-        'js': resolve('src/static/js/'),
-        'img': resolve('src/static/img/'),
-        'font': resolve('src/static/font/'),
-        'lib': resolve('src/static/lib/'),
-        'page': resolve('src/view/page/'),
-        'assets': resolve('src/static/assets/')
+        'css': resolve('src/css/'),
+        'scss': resolve('src/scss/'),
+        'js': resolve('src/js/'),
+        'img': resolve('src/img/'),
+        'font': resolve('src/font/'),
+        'lib': resolve('src/lib/'),
+        'page': resolve('src/view/page/')
       }
     },
     devServer: {
@@ -171,6 +173,7 @@ const generateConfig = env => {
     devtool: 'cheap-module-eval-source-map',
     plugins: [
       new HtmlWepackPlugin(getHtmlTemplate('index', '首页')),
+      new HtmlWepackPlugin(getHtmlTemplate('index2', '首页2')),
       // new webpack.DefinePlugin({
       //   $: 'jquery'
       // })

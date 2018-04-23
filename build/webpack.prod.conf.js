@@ -12,7 +12,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 module.exports = {
   devtool: 'source-map',
   plugins: [
-    new BundleAnalyzerPlugin(),
+    // new BundleAnalyzerPlugin(),
     new webpack.NamedChunksPlugin(),
     new ExtractTextPlugin({
       filename: 'static/css/[name].[chunkhash:5].css'
