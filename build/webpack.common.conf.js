@@ -54,7 +54,7 @@ const generateConfig = env => {
       {
         loader: 'url-loader',
         options: {
-          name: '[name].[hash:5].[ext]',
+          name: '[name].[hash:8].[ext]',
           limit: 1024,
           outputPath: `static/${filename}/`,
         }
@@ -101,7 +101,7 @@ const generateConfig = env => {
       path: path.resolve(__dirname, '../dist'),
       publicPath: '/',
       // publicPath: env === 'production' ? '/dist/' : '/',
-      filename: 'static/js/[name].bundle.[hash:5].js',
+      filename: env === 'production' ? 'static/js/[name].bundle.[chunkhash:8].js' : 'static/js/[name].bundle.[hash:8].js',
       chunkFilename: '[name].js'
     },
     module: {
@@ -147,7 +147,7 @@ const generateConfig = env => {
         // }
       ]
     },
-    devtool: 'cheap-module-eval-source-map',
+    devtool: '#cheap-module-eval-source-map',
     resolve: {
       alias: {
         '@': resolve('src/'),

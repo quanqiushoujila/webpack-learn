@@ -10,12 +10,12 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
-  devtool: 'source-map',
+  devtool: '#source-map',
   plugins: [
     // new BundleAnalyzerPlugin(),
     new webpack.NamedChunksPlugin(),
     new ExtractTextPlugin({
-      filename: 'static/css/[name].[chunkhash:5].css'
+      filename: 'static/css/[name].[hash:8].css'
     }),
     new webpack.optimize.CommonsChunkPlugin({
       names: ['vendor', 'manifest'],
