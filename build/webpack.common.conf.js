@@ -91,9 +91,10 @@ const generateConfig = env => {
       );
   
   return {
+    mode: process.env.NODE_ENV || 'production', 
+    target: 'web',
     entry: {
       app: './src/static/js/app.js',
-      vendor: ['babel-polyfill', 'jquery']
     },
     output: {
       path: path.resolve(__dirname, '../dist'),
@@ -135,8 +136,9 @@ const generateConfig = env => {
         }
       ]
     },
-    devtool: 'cheap-module-eval-source-map',
+    devtool: '#cheap-module-eval-source-map',
     resolve: {
+      extension: ['', '.js', '.json', '.css'],
       alias: {
         '@': resolve('src/'),
         'view': resolve('src/view/'),
@@ -159,6 +161,9 @@ const generateConfig = env => {
     },
     devtool: 'cheap-module-eval-source-map',
     plugins: [
+      new Webpack.ProvidePlugin({
+        '$': 'jquery'
+      }),
       new HtmlWepackPlugin(getHtmlTemplate('index'))
       // new webpack.DefinePlugin({
       //   $: 'jquery'

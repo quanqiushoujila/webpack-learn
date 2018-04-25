@@ -7,14 +7,28 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const Purifycss = require('purifycss-webpack');
 const HtmlInlineChunkPlugin = require('html-webpack-inline-chunk-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   devtool: 'source-map',
+  optimization: {
+    splitChunks: {
+      chunks: 'all'
+    },
+    runtimeChunk: true
+  },
   plugins: [
+    new CopyWebpackPlugin([
+      {
+        from: path.resolve(__dirname, '../static'),
+        to: path.resolve(__dirname, './static/lib'),
+        ignore: ['.*']
+      }
+    ]),
     new ExtractTextPlugin({
       filename: 'static/css/[name].[hash:5].css'
     }),
-    new webpack.optimize.SplitChunksPlugin({
+    /*new webpack.optimize.SplitChunksPlugin({
       chunks: 'all',
       name: true,
       cacheGroups: {
@@ -41,17 +55,17 @@ module.exports = {
     }),
     new webpack.optimize.RuntimeChunkPlugin({
       name: "manifest"
+    }),*/
+    new Purifycss({
+      paths: glob.sync([
+        path.join(__dirname, './src/view/*.html'),
+        path.join(__dirname, './src/static/*.js')
+      ])
     }),
-    // new Purifycss({
-    //   paths: glob.sync([
-    //     path.join(__dirname, './*.html'),
-    //     path.join(__dirname, './src/static/*.js')
-    //   ])
-    // }),
     new HtmlInlineChunkPlugin({
       inlineChunks: ['manifest']
     }),
-    new webpack.optimize.UglifyJsPlugin({sourceMap: false}),
+    // new webpack.optimize.UglifyJsPlugin({sourceMap: false}),
     new CleanWebpackPlugin(
       ['dist'],
       {
