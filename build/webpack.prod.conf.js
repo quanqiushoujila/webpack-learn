@@ -17,6 +17,10 @@ module.exports = {
     },
     runtimeChunk: true
   },
+  devServer: {
+    // 服务器压缩是否开启
+    compress: true
+  },
   plugins: [
     new CopyWebpackPlugin([
       {

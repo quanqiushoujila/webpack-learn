@@ -6,13 +6,13 @@ module.exports = {
   // devtool: 'eval-source-map',
   devServer: {
     port: 9999,
-    host: 'localhost',
+    host: '0.0.0.0',
     hot: true,
     historyApiFallback: true,
     overlay: true
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.NamedModulesPlugin()
+    new webpack.NamedModulesPlugin(),
+    new webpack.HotModuleReplacementPlugin()
   ]
 }

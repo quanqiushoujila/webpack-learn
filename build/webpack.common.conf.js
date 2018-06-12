@@ -19,10 +19,11 @@ function getHtmlTemplate (name) {
     inject: true,
     hash: true,
     mobile: true,
+    //是对html文件进行压缩
     minify: {
       removeComments: true,
       collapseWhitespace: true,
-      removeAttributeQuotes: true
+      removeAttributeQuotes: true //removeAttrubuteQuotes是却掉属性的双引号
     },
   }
 }
@@ -47,7 +48,7 @@ const generateConfig = env => {
           outputPath: `static/${filename}/`,
         }
       }
-    ] : 
+    ] :
     [
       {
         loader: 'url-loader',
@@ -59,7 +60,7 @@ const generateConfig = env => {
       }
     ]
   };
-  const cssLoaders = 
+  const cssLoaders =
     [
       {loader: 'css-loader', options: {minimize: env === 'production', sourceMap: env === 'development'}}
     ].concat(
@@ -72,7 +73,7 @@ const generateConfig = env => {
             plugins: [
               require('postcss-cssnext')(),
               require('autoprefixer')()
-            ].concat(env === 'production' ? 
+            ].concat(env === 'production' ?
               [] :
               [require('postcss-sprites')({spritePath: '/dist/static/img/sprites', retina: true})]
             )
@@ -80,7 +81,7 @@ const generateConfig = env => {
         }
       ]
     );
-  
+
   const styleLoaders = env === 'production' ?
     ExtractTextPlugin.extract({
       fallback: {loader: 'style-loader', options: {sourceMap: env === 'development'}},
@@ -89,9 +90,9 @@ const generateConfig = env => {
     [{loader: 'style-loader', options: {sourceMap: env === 'development'}}].concat(
       cssLoaders
       );
-  
+
   return {
-    mode: process.env.NODE_ENV || 'production', 
+    mode: process.env.NODE_ENV || 'production',
     target: 'web',
     entry: {
       app: './src/static/js/app.js',
@@ -153,17 +154,22 @@ const generateConfig = env => {
     },
     devServer: {
       port: 9999,
-      host: 'localhost',
+      host: '0.0.0.0',
       hot: true,
       historyApiFallback: true,
-      contentBase: path.join(__dirname, 'dist'),
+      contentBase: path.resolve(__dirname, 'dist'),
       overlay: true,
+      disableHostCheck: true,
+      publicPath: "/"
     },
     devtool: 'cheap-module-eval-source-map',
+    performance: {
+      hints: true
+    },
     plugins: [
-      new Webpack.ProvidePlugin({
+      /*new Webpack.ProvidePlugin({
         '$': 'jquery'
-      }),
+      }),*/
       new HtmlWepackPlugin(getHtmlTemplate('index'))
       // new webpack.DefinePlugin({
       //   $: 'jquery'
